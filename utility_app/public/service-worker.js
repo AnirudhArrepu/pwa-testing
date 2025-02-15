@@ -20,12 +20,17 @@ this.addEventListener("install", (event) => {
 
 this.addEventListener("fetch", (event) => {
     event.respondWith(
-        caches.open("pwa-cache-v1").then((cache) => {
-            return fetch(event.request).then((response) => {
-                cache.put(event.request, response.clone()); // Update cache
-                return response;
-            }).catch(() => caches.match(event.request)); // Fallback to cache
+        caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || fetch(event.request)
+                .then((networkResponse) => {
+                    return caches.open("pwa-cache-v1").then((cache) => {
+                        cache.put(event.request, networkResponse.clone()); // Cache new request
+                        return networkResponse;
+                    });
+                })
+                .catch(() => {
+                    return caches.match("/index.html"); // Fallback to index.html if offline
+                });
         })
     );
 });
-
