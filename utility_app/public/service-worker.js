@@ -1,36 +1,52 @@
 /* eslint-env serviceworker */
 
+const CACHE_NAME = "pwa-cache-v3"; // Increment this every new deployment
+
+const urlsToCache = [
+    "/",
+    "/index.html",
+    "/manifest.json",
+    "/logo192.png",
+    "/logo512.png",
+    "/static/js/bundle.js",
+];
+
+// 🔹 INSTALL: Cache only essential static assets
 this.addEventListener("install", (event) => {
     event.waitUntil(
-        caches.open("pwa-cache-v2").then((cache) => {
-            return cache.addAll([
-                "/",
-                "/index.html",
-                "/manifest.json",
-                "/logo192.png",
-                "/logo512.png","/static/js/bundle.js",
-                "/static/js/main.*.js",  // Ensure dynamic caching
-                "/static/css/main.*.css", 
-            ]);
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(urlsToCache);
         })
     );
 
-    this.skipWaiting();
+    this.skipWaiting(); // Activate service worker immediately
 });
 
+// 🔹 ACTIVATE: Remove old caches
+this.addEventListener("activate", (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames
+                    .filter((cacheName) => cacheName !== CACHE_NAME) // Delete old caches
+                    .map((cacheName) => caches.delete(cacheName))
+            );
+        })
+    );
+    this.clients.claim(); // Take control of all open tabs
+});
+
+// 🔹 FETCH: Prioritize network, fallback to cache
 this.addEventListener("fetch", (event) => {
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request)
-                .then((networkResponse) => {
-                    return caches.open("pwa-cache-v2").then((cache) => {
-                        cache.put(event.request, networkResponse.clone()); // Cache new request
-                        return networkResponse;
-                    });
-                })
-                .catch(() => {
-                    return caches.match("/index.html"); // Fallback to index.html if offline
+        fetch(event.request)
+            .then((networkResponse) => {
+                // Save new response to cache
+                return caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
                 });
-        })
+            })
+            .catch(() => caches.match(event.request) || caches.match("/index.html")) // Offline fallback
     );
 });
