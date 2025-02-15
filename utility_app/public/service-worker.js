@@ -2,7 +2,7 @@
 
 this.addEventListener("install", (event) => {
     event.waitUntil(
-        caches.open("pwa-cache-v1").then((cache) => {
+        caches.open("pwa-cache-v2").then((cache) => {
             return cache.addAll([
                 "/",
                 "/index.html",
@@ -23,7 +23,7 @@ this.addEventListener("fetch", (event) => {
         caches.match(event.request).then((cachedResponse) => {
             return cachedResponse || fetch(event.request)
                 .then((networkResponse) => {
-                    return caches.open("pwa-cache-v1").then((cache) => {
+                    return caches.open("pwa-cache-v2").then((cache) => {
                         cache.put(event.request, networkResponse.clone()); // Cache new request
                         return networkResponse;
                     });
