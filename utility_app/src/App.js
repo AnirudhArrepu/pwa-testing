@@ -39,6 +39,7 @@ const App = () => {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/map" element={<Nav />} />
+        <Route path="/map" element={<Nav />} />
       </Routes>
     </BrowserRouter>
   );
