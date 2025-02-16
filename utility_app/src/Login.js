@@ -2,13 +2,55 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const togglePassword = () => {
     setShowPassword((prevState) => !prevState);
   };
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/check-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: localStorage.getItem("username"), password: localStorage.getItem("password") }), // Replace with real authentication method
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        return true
+      }
+    } catch (error) {
+      console.error("Error checking auth:", error);
+      return false;
+    }
+
+    return false;
+  };
+
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    
+    localStorage.setItem("username", username);
+    localStorage.setItem("password", password);
+    checkAuth().then((authenticated) => {
+      if (authenticated) {
+        navigate("/admin");
+        console.log("Authenticated");
+      } else {
+        console.log("Not authenticated");
+        // alert("Invalid username or password");
+      }
+    });    
+  }
 
   return (
     <div
@@ -34,11 +76,11 @@ const LoginPage = () => {
             style={{
               height: "35%",
               fontSize: "30px",
-              width: "50%",
+              width: "70%",
               textAlign: "left",
             }}
           >
-            Hello, Signin!
+            Hello Admin, Signin!
           </h1>
         </div>
       </div>
@@ -73,11 +115,12 @@ const LoginPage = () => {
           >
             <div className="mb-3" style={{ marginTop: "-1vh" }}>
               <label htmlFor="username" className="form-label">
-                Email
+                Username
               </label>
               <input
                 type="text"
                 className="form-control"
+                onChange={(e) => setUsername(e.target.value)}
                 style={{ fontSize: "2.3vh" }}
                 id="username"
                 placeholder="Enter username"
@@ -91,6 +134,7 @@ const LoginPage = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   style={{ fontSize: "2.3vh" }}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="form-control"
                   id="password"
                   placeholder="Enter password"
@@ -105,15 +149,21 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
-            <button
+
+
+            <div style={{ marginTop: "6vh" }}> </div>
+            {/* <button
               className="btn d-block mx-auto"
               style={{ marginTop: "2vh" }}
             >
               Forgot Password?
-            </button>
+            </button> */}
+
+
             <button
               type="submit"
               className="btn btn-primary d-block mx-auto"
+              onClick={submitHandler}
               style={{
                 marginTop: "2vh",
                 height: "7vh",

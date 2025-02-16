@@ -17,7 +17,16 @@ const urlsToCache = [
 this.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(urlsToCache);
+            return cache.addAll([
+                "/",
+                "/index.html",
+                "/manifest.json",
+                "/logo192.png",
+                "/logo512.png",
+                "/static/js/bundle.js",
+                "/static/js/main.*.js",
+                "/static/css/main.*.css", 
+            ]);
         })
     );
 

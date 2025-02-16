@@ -1,22 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // const pdf2excel = require('pdf-to-excel');
-  // const handleFileChange = (event) => {
-  //   setSelectedFile(event.target.files[0]);
-  //   // pdf2excel.genXlsx(event.target.files[0], "output.xlsx", (err) => {
-  //   //   if (err) {
-  //   //     console.log(err);
-  //   //   } else {
-  //   //     console.log("Excel file generated successfully!");
-  //   //   }
-  //   // });
-  // };
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/check-auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: localStorage.getItem("username"), password: localStorage.getItem("password") }), // Replace with real authentication method
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          setAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("Error checking auth:", error);
+        navigate("/"); // Redirect on error
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // const authenticated = localStorage.getItem("authenticated") === "true";
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -25,8 +40,17 @@ const AdminPage = () => {
   
     setSelectedFile(file);
   };
-  
 
+  if (!authenticated) {
+    return (
+      <div className="container text-center mt-5">
+        <h2 className="text-danger">You are not allowed to open this page</h2>
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/")}>
+          Go to Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
