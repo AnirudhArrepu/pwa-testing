@@ -21,7 +21,8 @@ const Nav = () => {
         maxZoom: 18,
       });
 
-      newMap.addMapTiles("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
+      // newMap.addMapTiles("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
+      newMap.addMapTiles('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png');
       newMap.addGeoJSONTiles("https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json");
 
       if (navigator.geolocation) {
