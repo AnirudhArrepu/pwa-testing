@@ -1,6 +1,6 @@
 /* eslint-env serviceworker */
 
-const CACHE_NAME = "pwa-cache-v3"; // Increment this every new deployment
+const CACHE_NAME = "pwa-cache-v1";
 
 const urlsToCache = [
     "/",
@@ -9,6 +9,8 @@ const urlsToCache = [
     "/logo192.png",
     "/logo512.png",
     "/static/js/bundle.js",
+    "/static/js/main.*.js",
+    "/static/css/main.*.css", 
 ];
 
 // 🔹 INSTALL: Cache only essential static assets

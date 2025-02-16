@@ -7,7 +7,7 @@ const Nav = () => {
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [searchLocation, setSearchLocation] = useState("");
-  
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js";
@@ -25,23 +25,21 @@ const Nav = () => {
       newMap.addGeoJSONTiles("https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json");
 
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            newMap.setPosition({ latitude, longitude });
-            newMap.setZoom(18);
-
-            newMap.addMarker({
-              latitude,
-              longitude,
-              altitude: 20,
-              color: "red",
-            });
-          },
-          (error) => {
-            console.error("Error getting user location:", error);
+        navigator.permissions.query({ name: "geolocation" }).then((result) => {
+          if (result.state === "granted") {
+            getUserLocation(newMap);
+          } else if (result.state === "prompt") {
+            navigator.geolocation.getCurrentPosition(
+              (position) => getUserLocation(newMap, position),
+              (error) => {
+                console.error("Error getting user location:", error);
+                alert("Location permission is required for better accuracy.");
+              }
+            );
+          } else {
+            alert("Location access has been denied. Enable it in settings for full functionality.");
           }
-        );
+        });
       }
 
       setMap(newMap);
@@ -52,6 +50,21 @@ const Nav = () => {
       document.body.removeChild(script);
     };
   }, []);
+
+  const getUserLocation = (newMap, position = null) => {
+    if (!position) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => getUserLocation(newMap, pos),
+        (error) => console.error("Error retrieving location:", error)
+      );
+      return;
+    }
+
+    const { latitude, longitude } = position.coords;
+    newMap.setPosition({ latitude, longitude });
+    newMap.setZoom(18);
+    newMap.addMarker({ latitude, longitude, altitude: 20, color: "red" });
+  };
 
   const locations = [
     { lat: 13.718391141515943, lng: 79.58766854203355, name: "Malhar Hostel" },
@@ -78,27 +91,16 @@ const Nav = () => {
   
       setMarker(newMarker);
   
-      // Get user's current location
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
   
-          // Calculate bounding box
-          const minLat = Math.min(userLat, selectedLocation.lat);
-          const maxLat = Math.max(userLat, selectedLocation.lat);
-          const minLng = Math.min(userLng, selectedLocation.lng);
-          const maxLng = Math.max(userLng, selectedLocation.lng);
-  
-          // Center the map to the midpoint
-          const centerLat = (minLat + maxLat) / 2;
-          const centerLng = (minLng + maxLng) / 2;
-  
-          // Adjust zoom dynamically
-          const zoom = 16; // Adjust this based on distance if needed
+          const centerLat = (userLat + selectedLocation.lat) / 2;
+          const centerLng = (userLng + selectedLocation.lng) / 2;
   
           map.setPosition({ latitude: centerLat, longitude: centerLng });
-          map.setZoom(zoom);
+          map.setZoom(16);
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -109,72 +111,22 @@ const Nav = () => {
 
   return (
     <div>
-      {/* Top Card */}
-      <div
-        className="card text-white rounded-0 position-relative"
-        style={{
-          width: "110%",
-          height: "33.33vh",
-          background: "linear-gradient(270deg, #540B0E, #CE4257)",
-          border: "none",
-        }}
-      >
-        <div
-          className="card-body d-flex justify-content-between align-items-center"
-          style={{ marginLeft: "20px", marginRight: "20px" }}
-        >
-          <h1
-            className="krona-style"
-            style={{
-              height: "70%",
-              fontSize: "33px",
-              width: "50%",
-              textAlign: "left",
-            }}
-          >
-            Map
-          </h1>
-
-          {/* Exit Icon */}
-          <i
-            className="bi bi-x-lg"
-            style={{
-              fontSize: "4vh",
-              cursor: "pointer",
-              position: "absolute",
-              right: "10vh",
-              top: "33%",
-              transform: "translateY(-100%)",
-            }}
-            onClick={() => navigate("/")}
-          ></i>
+      <div className="card text-white rounded-0 position-relative" style={{ width: "110%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}>
+        <div className="card-body d-flex justify-content-between align-items-center" style={{ marginLeft: "20px", marginRight: "20px" }}>
+          <h1 className="krona-style" style={{ height: "70%", fontSize: "33px", width: "50%", textAlign: "left" }}>Map</h1>
+          <i className="bi bi-x-lg" style={{ fontSize: "4vh", cursor: "pointer", position: "absolute", right: "10vh", top: "33%", transform: "translateY(-100%)" }} onClick={() => navigate("/")}></i>
         </div>
       </div>
 
-      {/* Bottom Card */}
-      <div
-        className="card shadow"
-        style={{
-          padding: "2vh",
-          width: "100%",
-          position: "absolute",
-          top: "15vh",
-          left: "50%",
-          transform: "translateX(-50%)",
-          height: "100vh",
-          border: "none",
-          borderRadius: "6vh",
-          overflow: "hidden",
-        }}
-      >
-        <select value={searchLocation} onChange={handleSearch} className="form-control" style={{ marginBottom: "10px", marginTop: "2vh"}}>
+      <div className="card shadow" style={{ padding: "2vh", width: "100%", position: "absolute", top: "15vh", left: "50%", transform: "translateX(-50%)", height: "100vh", border: "none", borderRadius: "6vh", overflow: "hidden" }}>
+        <select value={searchLocation} onChange={handleSearch} className="form-control" style={{ marginBottom: "10px", marginTop: "2vh" }}>
           <option value="">Select a Destination Location</option>
           {locations.map((loc) => (
             <option key={loc.name} value={loc.name}>{loc.name}</option>
           ))}
         </select>
-        <div id="map" style={{ width: "100%", height: "60vh", marginTop: "2vh"}} />
-        <div id="note" style={{fontStyle: "italic", marginTop: "1vh"}}>One fingers gesture to span, two finger gesture to rotate <br></br>Destination and Current locations are denoted by a black marker</div>
+        <div id="map" style={{ width: "100%", height: "60vh", marginTop: "2vh" }} />
+        <div id="note" style={{ fontStyle: "italic", marginTop: "1vh" }}>One-finger gesture to span, two-finger gesture to rotate <br />Destination and Current locations are denoted by a black marker</div>
       </div>
     </div>
   );
