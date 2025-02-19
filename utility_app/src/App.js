@@ -9,6 +9,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import AdminPage from "./Admin-Page/Admin";
 import Nav from "./Nav-Page/Nav";
 import HomePage from "./Home-Page/Home";
+import SplashScreen from "./Splash";
 
 const App = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -35,7 +36,8 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage/>} />
+        <Route path="/" element={<SplashScreen/>} />
+        <Route path="/home" element={<HomePage/>} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/map" element={<Nav />} />
