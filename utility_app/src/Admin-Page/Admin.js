@@ -24,7 +24,7 @@ const AdminPage = () => {
         }
       } catch (error) {
         console.error("Error checking auth:", error);
-        navigate("/"); // Redirect on error
+        // navigate("/"); // Redirect on error
       }
     };
 
