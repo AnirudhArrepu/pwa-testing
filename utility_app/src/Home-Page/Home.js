@@ -8,7 +8,7 @@ const HomePage = () => {
 
   const announcements = [
     { title: "Exam Schedule Update", message: "Mid-term exams postponed by a week.", date: "Feb 18, 2025" },
-    { title: "Workshop", message: "AI & ML Workshop this Saturday. Register now!", date: "Feb 20, 2025" },
+    { title: "Workshop", message: "Flutter Workshop this Saturday. Register now!", date: "Feb 20, 2025" },
   ];
   
 
@@ -89,7 +89,7 @@ const HomePage = () => {
         style={{ width: "100%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}
       >
         <div className="card-body d-flex justify-content-between align-items-center" style={{ marginLeft: "20px", marginRight: "20px" }}>
-          <h1 className="krona-style" style={{ height: "70%", fontSize: "33px", width: "50%", textAlign: "left" }}>
+          <h1 className="" style={{ height: "70%", fontSize: "33px", width: "50%", textAlign: "left" }}>
             Home
           </h1>
           {/* Person Icon */}

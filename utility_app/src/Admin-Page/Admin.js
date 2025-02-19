@@ -72,7 +72,7 @@ const AdminPage = () => {
           style={{ marginLeft: "20px", marginRight: "20px" }}
         >
           <h1
-            className="krona-style"
+            className=""
             style={{
               height: "70%",
               fontSize: "33px",
