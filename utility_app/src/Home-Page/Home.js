@@ -79,7 +79,6 @@ const HomePage = () => {
       const [hour, minute] = timePart.split(":").map(Number);
       let busMinutes = hour * 60 + minute;
 
-      // Adjust for next day if needed
       if (busMinutes < currentTime) {
         busMinutes += 24 * 60;
       }
