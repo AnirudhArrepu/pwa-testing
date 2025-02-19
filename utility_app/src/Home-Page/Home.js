@@ -10,25 +10,54 @@ const HomePage = () => {
     { title: "Exam Schedule Update", message: "Mid-term exams postponed by a week.", date: "Feb 18, 2025" },
     { title: "Workshop", message: "Flutter Workshop this Saturday. Register now!", date: "Feb 20, 2025" },
   ];
-  
 
-  const events_gradients = {
-    "DW": "390BDE C5FB12",
-    "Sigma Squad": "390BDE D4FCFE",
-  };
-
-  // Converted events to an array of objects to avoid duplicate keys
   const events = [
     { title: "DW", details: ["Flutter x Firebase", "20-7-24", "LHC CR 006", "20:00"] },
-    { title: "Sigma Squad", details: ["Event 2 Description", "20-7-24", "LHC CR 006", "20:00"] },
-    { title: "DW", details: ["Git & GitHub", "24-7-24", "LHC CR 006", "20:00"] },
+    { title: "DW", details: ["ReactJS", "20-7-24", "LHC CR 006", "21:00"] },
+    { title: "DW", details: ["Git & GitHub", "24-7-24", "LHC CR 006", "22:00"] },
   ];
 
-  const food = {
-    breakfast: "Veg Uthappam | Masala Sambar + Groundnut Chutney",
-    lunch: "Rice | Dal Tadka | Mixed Veg Curry | Curd | Pappad | Gobi Fry",
-    dinner: "Chapati | Paneer Butter Masala | Jeera Rice | Salad",
+  const weeklyMenu = {
+    Monday: {
+      breakfast: "Idli | Sambar | Coconut   hutney",
+      lunch: "Rice | Dal Fry | Bhindi Masala | Curd | Papad",
+      dinner: "Roti | Chole Masala | Jeera Rice | Salad",
+    },
+    Tuesday: {
+      breakfast: "Aloo Paratha | Curd | Pickle",
+      lunch: "Lemon Rice | Mixed Veg Curry | Curd | Papad",
+      dinner: "Roti | Rajma | Steamed Rice | Salad",
+    },
+    Wednesday: {
+      breakfast: "Poha | Sev | Lemon",
+      lunch: "Plain Rice | Chana Masala | Curd | Papad",
+      dinner: "Chapati | Kadai Paneer | Veg Pulao | Salad",
+    },
+    Thursday: {
+      breakfast: "Masala Dosa | Coconut Chutney | Sambar",
+      lunch: "Jeera Rice | Dal Tadka | Aloo Gobi | Curd | Papad",
+      dinner: "Roti | Baingan Bharta | Fried Rice | Salad",
+    },
+    Friday: {
+      breakfast: "Upma | Sambar | Coconut Chutney",
+      lunch: "Rice | Methi Dal | Mixed Veg Curry | Curd | Papad",
+      dinner: "Naan | Paneer Butter Masala | Jeera Rice | Salad",
+    },
+    Saturday: {
+      breakfast: "Dhokla | Green Chutney",
+      lunch: "Sambar Rice | Cabbage Poriyal | Curd | Papad",
+      dinner: "Tandoori Roti | Dal Makhani | Pulao | Salad",
+    },
+    Sunday: {
+      breakfast: "Puri | Chana Masala",
+      lunch: "Veg Biryani | Raita | Papad | Gulab Jamun",
+      dinner: "Roti | Shahi Paneer | Veg Fried Rice | Salad",
+    },
   };
+
+  const today = new Date().toLocaleDateString("en-IN", { weekday: "long" });
+  const todayMenu = weeklyMenu[today] || {};
+
 
   const busTimings = {
     "Round 1": ["13:30 AB1", "13:35 Transit Campus", "13:45 Malhar"],
@@ -62,7 +91,6 @@ const HomePage = () => {
       });
     }
 
-    // Sort candidates by adjusted time and return the first one
     candidates.sort((a, b) => a.busMinutes - b.busMinutes);
     const nearest = candidates[0];
 
@@ -72,14 +100,16 @@ const HomePage = () => {
     };
   };
 
-  // Sort events based on time (fourth element in the details array)
-  const sortedEvents = events.sort((a, b) => {
-    const timeToMinutes = (timeStr) => {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      return hours * 60 + minutes;
+  const sortedEvents = [...events].sort((a, b) => {
+    const parseDateTime = (event) => {
+        const [day, month, year] = event.details[1].split("-").map(Number);
+        const [hours, minutes] = event.details[3].split(":").map(Number);
+        return new Date(year, month - 1, day, hours, minutes);
     };
-    return timeToMinutes(a.details[3]) - timeToMinutes(b.details[3]);
+
+    return parseDateTime(a) - parseDateTime(b);
   });
+
 
   return (
     <div className="container-fluid p-0 position-relative" style={{ height: "100vh" }}>
@@ -114,13 +144,13 @@ const HomePage = () => {
         style={{ padding: "2vh", width: "100%", position: "fixed", top: "15vh", left: "50%", transform: "translateX(-50%)", height: "100vh", border: "none", borderRadius: "6vh", overflowY: "auto" }}
       >
         <div className="card-body" style={{ marginTop: "1vh", height: "100%" }}>
-          {/* <EventWidget /> */}
+
           {/* Events */}
             <h5 className="mb-3" style={{ fontSize: "3vh", fontWeight: "650" }}>Events</h5>
             <div style={{
               overflowX: "auto",
               whiteSpace: "nowrap",
-              scrollbarWidth: "none", // Hides scrollbar in Firefox
+              scrollbarWidth: "none",
               marginTop: "-2vh",
               marginLeft: "-2vh"
             }} className="scroll-container d-flex gap-3 p-3">
@@ -130,7 +160,7 @@ const HomePage = () => {
               const monthName = monthNames[month - 1];
 
               return (
-                <div key={index}> 
+                <div key={event.title + index}> 
                   <EventWidget title={event.details[0]} time={event.details[3]} club={event.title} day={day.toString()} month={monthName} classroom={event.details[2]} />
                 </div>
               );
@@ -183,7 +213,7 @@ const HomePage = () => {
           {/* Mess Schedule */}
           <h5 className="mb-3" style={{ marginTop: "3vh", fontSize: "3vh", fontWeight: "650" }}>Mess Schedule</h5>
           <div style={{ display: "flex", overflowX: "scroll", scrollbarWidth: "none", msOverflowStyle: "none", gap: "10px", paddingBottom: "10px" }} className="scroll-container">
-            {Object.entries(food).map(([meal, description]) => (
+            {Object.entries(todayMenu).map(([meal, description]) => (
               <div
                 key={meal}
                 className="card p-3 text-center"
