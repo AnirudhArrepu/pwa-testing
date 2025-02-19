@@ -1,9 +1,16 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import EventWidget from "./EventWidget.js";
 
 const HomePage = () => {
   const navigate = useNavigate();
+
+  const announcements = [
+    { title: "Exam Schedule Update", message: "Mid-term exams postponed by a week.", date: "Feb 18, 2025" },
+    { title: "Workshop", message: "AI & ML Workshop this Saturday. Register now!", date: "Feb 20, 2025" },
+  ];
+  
 
   const events_gradients = {
     "DW": "390BDE C5FB12",
@@ -75,11 +82,11 @@ const HomePage = () => {
   });
 
   return (
-    <div className="container-fluid p-0 position-relative" style={{ height: "100vh", overflow: "hidden" }}>
+    <div className="container-fluid p-0 position-relative" style={{ height: "100vh" }}>
       {/* Top Card */}
       <div
         className="card text-white rounded-0 position-relative"
-        style={{ width: "110%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}
+        style={{ width: "100%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}
       >
         <div className="card-body d-flex justify-content-between align-items-center" style={{ marginLeft: "20px", marginRight: "20px" }}>
           <h1 className="krona-style" style={{ height: "70%", fontSize: "33px", width: "50%", textAlign: "left" }}>
@@ -92,69 +99,89 @@ const HomePage = () => {
               fontSize: "4vh",
               cursor: "pointer",
               position: "absolute",
-              right: "10vh",
+              right: "6vh",
               top: "33%",
               transform: "translateY(-100%)",
             }}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/admin")}
           ></i>
         </div>
       </div>
 
       {/* Bottom Card */}
       <div
-        className="card shadow"
-        style={{ padding: "2vh", width: "100%", position: "absolute", top: "15vh", left: "50%", transform: "translateX(-50%)", height: "100vh", border: "none", borderRadius: "6vh", overflow: "hidden" }}
+        className="card shadow scroll-container"
+        style={{ padding: "2vh", width: "100%", position: "fixed", top: "15vh", left: "50%", transform: "translateX(-50%)", height: "100vh", border: "none", borderRadius: "6vh", overflowY: "auto" }}
       >
         <div className="card-body" style={{ marginTop: "1vh", height: "100%" }}>
+          {/* <EventWidget /> */}
           {/* Events */}
             <h5 className="mb-3" style={{ fontSize: "3vh", fontWeight: "650" }}>Events</h5>
-            <div style={{ display: "flex", overflowX: "scroll", scrollbarWidth: "none", msOverflowStyle: "none", gap: "10px", paddingBottom: "10px" }} className="scroll-container">
+            <div style={{
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+              scrollbarWidth: "none", // Hides scrollbar in Firefox
+              marginTop: "-2vh",
+              marginLeft: "-2vh"
+            }} className="scroll-container d-flex gap-3 p-3">
             {sortedEvents.map((event, index) => {
-                const gradientValue = events_gradients[event.title] || "a8a8a8 d1d1d1";
-                const [color1, color2] = gradientValue.split(" ");
-                const gradient = `linear-gradient(to right, #${color2}, #${color1})`;
-                
-                return (
-                <div
-                    key={index}
-                    className="card p-3 text-center"
-                    style={{ 
-                    borderRadius: "15px", 
-                    background: gradient, 
-                    boxShadow: "2px 2px 10px rgba(0,0,0,0.2)", 
-                    minWidth: "250px",
-                    position: "relative" // Ensures child elements can use absolute positioning
-                    }}
-                >
-                    <h5 style={{color:"#000000", fontSize: "2.5vh", fontWeight: "500", marginBottom: "5px" }}>{event.title}</h5>
-                    <hr style={{color:"#ffffff", borderTop: "2px solid black", width: "80%", margin: "auto", marginBottom: "10px" }} />
-                    <p style={{ color:"#ffffff", fontSize: "2vh", fontWeight: "400", marginBottom: "0" }}>{event.details[0]}</p>
-                    <p style={{ color:"#ffffff", fontSize: "1.8vh", marginBottom: "0" }}>{event.details[1]}</p>
-                    <p style={{ color:"#ffffff", fontSize: "1.8vh", marginBottom: "0" }}>{event.details[2]}</p>
-                    <p style={{ color:"#ffffff", fontSize: "2vh", fontWeight: "400", marginBottom: "0" }}>{event.details[3]}</p>
-                    
-                    {/* Event Icon */}
-                    <img 
-                    src={`/event_icons/${event.title}.svg`} 
-                    alt="ico" 
-                    onError={(e) => e.target.style.display = "none"}
-                    style={{ 
-                        position: "absolute", 
-                        bottom: "0vh", 
-                        right: "0vh", 
-                        width: "auto", 
-                        height: "8vh",
-                        opacity: "0.8" 
-                    }} 
-                    />
+              const [day, month, year] = event.details[1].split("-").map(Number);
+              const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              const monthName = monthNames[month - 1];
+
+              return (
+                <div key={index}> 
+                  <EventWidget title={event.details[0]} time={event.details[3]} club={event.title} day={day.toString()} month={monthName} classroom={event.details[2]} />
                 </div>
-                );
+              );
             })}
+
             </div>
 
+          {/* Announcements */}
+          <h5 className="mb-3" style={{ fontSize: "3vh", fontWeight: "650" }}>Announcements</h5>
+          {announcements.length > 0 ? (
+            <div className="d-flex flex-column gap-3" style={{
+              maxHeight: "25vh",
+              overflowY: "auto"
+            }}>
+              {announcements.map((announcement, index) => (
+                <div
+                  key={index}
+                  className="card p-3"
+                  style={{
+                    borderRadius: "15px",
+                    background: "linear-gradient(to right, #f8d7da, #fbecec)",
+                    boxShadow: "2px 2px 10px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  <div className="d-flex align-items-center">
+                    <i
+                      className="bi bi-info-circle"
+                      style={{ fontSize: "2.5vh", color: "#721c24", marginRight: "10px" }}
+                    ></i>
+                    <div>
+                      <h6 style={{ fontSize: "2.2vh", fontWeight: "bold", marginBottom: "3px" }}>
+                        {announcement.title}
+                      </h6>
+                      <p style={{ fontSize: "1.8vh", marginBottom: "0" }}>{announcement.message}</p>
+                      <small className="text-muted">{announcement.date}</small>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="card p-3 text-center" style={{ borderRadius: "15px", background: "#f8f9fa" }}>
+              <h6 style={{ fontSize: "2.2vh", fontWeight: "bold", color: "#6c757d" }}>
+                No announcements for now!
+              </h6>
+              <p className="text-muted">Check back later for updates.</p>
+            </div>
+          )}
+
           {/* Mess Schedule */}
-          <h5 className="mb-3" style={{ fontSize: "3vh", fontWeight: "650" }}>Mess Schedule</h5>
+          <h5 className="mb-3" style={{ marginTop: "3vh", fontSize: "3vh", fontWeight: "650" }}>Mess Schedule</h5>
           <div style={{ display: "flex", overflowX: "scroll", scrollbarWidth: "none", msOverflowStyle: "none", gap: "10px", paddingBottom: "10px" }} className="scroll-container">
             {Object.entries(food).map(([meal, description]) => (
               <div
@@ -182,18 +209,22 @@ const HomePage = () => {
             <p style={{ fontSize: "2vh", fontWeight: "500", marginBottom: "0" }}>{getNearestBus().time}</p>
           </div>
 
-          {/* Floating Action Button */}
-          <button
-            onClick={() => navigate("/map")}
-            className="btn btn-primary position-absolute"
-            style={{ height: "10vh", width: "10vh", bottom: "17vh", right: "3vh", fontSize: "2.5vh", backgroundImage: "linear-gradient(to right, #CE4257, #540B0E )", padding: "15px 20px", borderRadius: "5vh" }}
-          >
-            Map
-          </button>
+          <div style={{height: "25vh"}}>
+
+          </div>
+
 
           <style>{`.scroll-container::-webkit-scrollbar { display: none; }`}</style>
         </div>
       </div>
+      {/* Floating Action Button */}
+      <button
+        onClick={() => navigate("/map")}
+        className="btn btn-primary position-absolute"
+        style={{ height: "10vh", width: "10vh", bottom: "6vh", right: "3vh", fontSize: "2vh", backgroundImage: "linear-gradient(to right, #CE4257, #540B0E )", padding: "15px 20px", borderRadius: "5vh" }}
+      >
+        Map
+      </button>
     </div>
   );
 };

@@ -112,23 +112,64 @@ const Nav = () => {
 
   return (
     <div>
-      <div className="card text-white rounded-0 position-relative" style={{ width: "110%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}>
+      {/*Top Card*/}
+      <div className="card text-white rounded-0 position-relative" style={{ width: "100%", height: "33.33vh", background: "linear-gradient(270deg, #540B0E, #CE4257)", border: "none" }}>
         <div className="card-body d-flex justify-content-between align-items-center" style={{ marginLeft: "20px", marginRight: "20px" }}>
           <h1 className="krona-style" style={{ height: "70%", fontSize: "33px", width: "50%", textAlign: "left" }}>Map</h1>
-          <i className="bi bi-x-lg" style={{ fontSize: "4vh", cursor: "pointer", position: "absolute", right: "10vh", top: "33%", transform: "translateY(-100%)" }} onClick={() => navigate("/")}></i>
+          <i className="bi bi-x-lg" style={{ fontSize: "4vh", cursor: "pointer", position: "absolute", right: "6vh", top: "33%", transform: "translateY(-100%)" }} onClick={() => navigate("/")}></i>
         </div>
       </div>
 
-      <div className="card shadow" style={{ padding: "2vh", width: "100%", position: "absolute", top: "15vh", left: "50%", transform: "translateX(-50%)", height: "100vh", border: "none", borderRadius: "6vh", overflow: "hidden" }}>
-        <select value={searchLocation} onChange={handleSearch} className="form-control" style={{ marginBottom: "10px", marginTop: "2vh" }}>
-          <option value="">Select a Destination Location</option>
-          {locations.map((loc) => (
-            <option key={loc.name} value={loc.name}>{loc.name}</option>
-          ))}
-        </select>
-        <div id="map" style={{ width: "100%", height: "60vh", marginTop: "2vh" }} />
-        <div id="note" style={{ fontStyle: "italic", marginTop: "1vh" }}>One-finger gesture to span, two-finger gesture to rotate <br />Destination and Current locations are denoted by a black marker</div>
+      {/* Bottom Card */}
+      <div
+        className="card shadow"
+        style={{
+          width: "100%",
+          position: "fixed",
+          top: "15vh",
+          left: "50%",
+          transform: "translateX(-50%)",
+          height: "100vh",
+          border: "none",
+          borderRadius: "6vh",
+          overflow: "hidden",
+          padding: "0", // Remove padding to allow the map to fill the card completely
+        }}
+      >
+        {/* Select Dropdown (Overlay) */}
+        <div
+          style={{
+            position: "absolute",
+            top: "3vh",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "90%",
+            zIndex: "2", // Ensure dropdown stays above the map
+            background: "rgba(255, 255, 255, 0.9)", // Slightly transparent background for readability
+            borderRadius: "5vh",
+            padding: "1vh",
+            boxShadow: "0px 4px 10px rgba(0,0,0,0.2)", // Optional shadow
+          }}
+        >
+          <select
+            value={searchLocation}
+            onChange={handleSearch}
+            className="form-control"
+            style={{ width: "100%", borderRadius: "5vh" }}
+          >
+            <option value="">Select a Destination Location</option>
+            {locations.map((loc) => (
+              <option key={loc.name} value={loc.name}>{loc.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Map Section (Full Height) */}
+        <div id="map" style={{ width: "100%", height: "100%" }} />
+
+        
       </div>
+
     </div>
   );
 };
