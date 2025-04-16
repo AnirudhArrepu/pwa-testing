@@ -1,2 +1,2 @@
-# IIT Tirupati Utility App (PWA)
+# IIT Tirupati Utility App (PWA);
 ---
